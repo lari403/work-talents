@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Formulário de Feedback — Work Talents</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .thankyou{ margin-top:12px; padding:14px; border-radius:12px; background:linear-gradient(90deg,var(--accent),var(--primary)); color:#fff; font-weight:700 }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="section">
+      <div class="card">
+        <h2>Formulário de Feedback — Conclusão de Curso</h2>
+        <form id="feedbackFullForm">
+        <label>1. Nome (opcional)</label>
+        <input type="text" id="name" placeholder="Seu nome (opcional)" />
+
+        <label>Curso realizado</label>
+        <input type="text" id="course" placeholder="Nome do curso" />
+
+        <label>2. Como você avaliaria o conteúdo do curso?</label>
+        <div class="radios" id="q2">
+          <label><input type="radio" name="q2" value="Excelente"/> Excelente</label>
+          <label><input type="radio" name="q2" value="Muito bom"/> Muito bom</label>
+          <label><input type="radio" name="q2" value="Bom"/> Bom</label>
+          <label><input type="radio" name="q2" value="Regular"/> Regular</label>
+          <label><input type="radio" name="q2" value="Ruim"/> Ruim</label>
+        </div>
+
+        <label>3. O conteúdo foi apresentado de forma clara e fácil de entender?</label>
+        <div class="radios" id="q3">
+          <label><input type="radio" name="q3" value="Sim, totalmente"/> Sim, totalmente</label>
+          <label><input type="radio" name="q3" value="Sim, parcialmente"/> Sim, parcialmente</label>
+          <label><input type="radio" name="q3" value="Em alguns momentos"/> Em alguns momentos</label>
+          <label><input type="radio" name="q3" value="Não muito"/> Não muito</label>
+          <label><input type="radio" name="q3" value="Não"/> Não</label>
+        </div>
+
+        <label>4. O curso atendeu às suas expectativas?</label>
+        <div class="radios" id="q4">
+          <label><input type="radio" name="q4" value="Superou as expectativas"/> Superou as expectativas</label>
+          <label><input type="radio" name="q4" value="Atendeu totalmente"/> Atendeu totalmente</label>
+          <label><input type="radio" name="q4" value="Atendeu parcialmente"/> Atendeu parcialmente</label>
+          <label><input type="radio" name="q4" value="Atendeu pouco"/> Atendeu pouco</label>
+          <label><input type="radio" name="q4" value="Não atendeu"/> Não atendeu</label>
+        </div>
+
+        <label>5. Qual foi o nível de dificuldade do curso?</label>
+        <div class="radios" id="q5">
+          <label><input type="radio" name="q5" value="Muito fácil"/> Muito fácil</label>
+          <label><input type="radio" name="q5" value="Fácil"/> Fácil</label>
+          <label><input type="radio" name="q5" value="Moderado"/> Moderado</label>
+          <label><input type="radio" name="q5" value="Difícil"/> Difícil</label>
+          <label><input type="radio" name="q5" value="Muito difícil"/> Muito difícil</label>
+        </div>
+
+        <label>6. A plataforma de estudo (vídeos, materiais, interface) foi satisfatória?</label>
+        <div class="radios" id="q6">
+          <label><input type="radio" name="q6" value="Excelente"/> Excelente</label>
+          <label><input type="radio" name="q6" value="Muito boa"/> Muito boa</label>
+          <label><input type="radio" name="q6" value="Boa"/> Boa</label>
+          <label><input type="radio" name="q6" value="Regular"/> Regular</label>
+          <label><input type="radio" name="q6" value="Ruim"/> Ruim</label>
+        </div>
+
+        <label>7. Como você avalia a atuação da Inteligência Artificial durante seu aprendizado?</label>
+        <div class="radios" id="q7">
+          <label><input type="radio" name="q7" value="Excelente"/> Excelente</label>
+          <label><input type="radio" name="q7" value="Muito boa"/> Muito boa</label>
+          <label><input type="radio" name="q7" value="Boa"/> Boa</label>
+          <label><input type="radio" name="q7" value="Regular"/> Regular</label>
+          <label><input type="radio" name="q7" value="Ruim"/> Ruim</label>
+          <label><input type="radio" name="q7" value="Não utilizei a IA"/> Não utilizei a IA</label>
+        </div>
+
+        <label>8. Você sente que evoluiu seus conhecimentos com este curso?</label>
+        <div class="radios" id="q8">
+          <label><input type="radio" name="q8" value="Muito"/> Muito</label>
+          <label><input type="radio" name="q8" value="Consideravelmente"/> Consideravelmente</label>
+          <label><input type="radio" name="q8" value="Um pouco"/> Um pouco</label>
+          <label><input type="radio" name="q8" value="Pouco"/> Pouco</label>
+          <label><input type="radio" name="q8" value="Nada"/> Nada</label>
+        </div>
+
+        <label>9. Você se sente preparado para aplicar na prática o que aprendeu?</label>
+        <div class="radios" id="q9">
+          <label><input type="radio" name="q9" value="Sim"/> Sim</label>
+          <label><input type="radio" name="q9" value="Parcialmente"/> Parcialmente</label>
+          <label><input type="radio" name="q9" value="Ainda tenho dúvidas"/> Ainda tenho dúvidas</label>
+          <label><input type="radio" name="q9" value="Não"/> Não</label>
+        </div>
+
+        <label>10. Quais partes do curso você mais gostou?</label>
+        <textarea id="q10" placeholder="Descreva as partes que você mais gostou"></textarea>
+
+        <label>11. Quais partes você acredita que precisam ser melhoradas?</label>
+        <textarea id="q11" placeholder="Sugestões de melhoria"></textarea>
+
+        <label>12. Você recomendaria este curso para outras pessoas?</label>
+        <div class="radios" id="q12">
+          <label><input type="radio" name="q12" value="Sim, com certeza"/> Sim, com certeza</label>
+          <label><input type="radio" name="q12" value="Talvez"/> Talvez</label>
+          <label><input type="radio" name="q12" value="Não"/> Não</label>
+        </div>
+
+        <label>13. Deixe aqui sua sugestão, crítica ou comentário final:</label>
+        <textarea id="q13" placeholder="Comentários finais"></textarea>
+
+        <div class="actions">
+          <a href="index.html" class="btn-ghost">Voltar</a>
+          <button type="submit" class="btn-small">Enviar Feedback</button>
+        </div>
+      </form>
+      <div id="thankYou" class="thankyou hidden">Agradecemos por concluir o curso e contribuir — seu feedback foi enviado!</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('feedbackFullForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const data = {
+        name: document.getElementById('name').value.trim(),
+        course: document.getElementById('course').value.trim() || (new URLSearchParams(location.search)).get('course') || '',
+        q2: document.querySelector('input[name="q2"]:checked')?.value || '',
+        q3: document.querySelector('input[name="q3"]:checked')?.value || '',
+        q4: document.querySelector('input[name="q4"]:checked')?.value || '',
+        q5: document.querySelector('input[name="q5"]:checked')?.value || '',
+        q6: document.querySelector('input[name="q6"]:checked')?.value || '',
+        q7: document.querySelector('input[name="q7"]:checked')?.value || '',
+        q8: document.querySelector('input[name="q8"]:checked')?.value || '',
+        q9: document.querySelector('input[name="q9"]:checked')?.value || '',
+        q10: document.getElementById('q10').value.trim(),
+        q11: document.getElementById('q11').value.trim(),
+        q12: document.querySelector('input[name="q12"]:checked')?.value || '',
+        q13: document.getElementById('q13').value.trim(),
+        ts: new Date().toISOString()
+      };
+      try{
+        // Try to POST to local API if available
+        fetch('/api/feedback', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) }).catch(()=>{});
+      }catch(e){}
+      // Save locally as fallback
+      try{
+        const list = JSON.parse(localStorage.getItem('wt_feedback')||'[]'); list.push(data); localStorage.setItem('wt_feedback', JSON.stringify(list));
+      }catch(e){}
+      document.getElementById('feedbackFullForm').classList.add('hidden');
+      document.getElementById('thankYou').classList.remove('hidden');
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  </script>
+</body>
+</html>

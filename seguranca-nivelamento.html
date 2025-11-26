@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Teste de Nivelamento — Segurança no Trabalho | Work Talents</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Use the site's palette variables from styles.css */
+    .quiz-container{ max-width:920px;margin:20px auto;padding:20px }
+    .quiz-header{ display:flex;justify-content:space-between;align-items:center;gap:12px }
+    .quiz-title{ margin:0;font-size:1.2rem;color:var(--primary-dark) }
+    .quiz-sub{ margin:6px 0 0;color:var(--muted);font-size:0.95rem }
+    .question{ margin-bottom:14px;padding:14px;border-radius:12px;border:1px solid rgba(139,43,183,0.06);background:linear-gradient(180deg,var(--card),#fbf9ff) }
+    .question h4{ margin:0 0 10px;font-size:1rem;color:var(--primary-dark) }
+    .options{ display:block }
+    .options label{ display:flex;align-items:center;gap:10px;margin:6px 0;padding:10px;border-radius:8px;cursor:pointer;border:1px solid transparent;transition:all .12s ease }
+    .options label:hover{ transform:translateY(-2px); box-shadow:0 6px 18px rgba(93,30,127,0.06) }
+    .options input{ margin:0;transform:translateY(-1px) }
+    .options label.correct{ background: rgba(139,43,183,0.06); border-color: rgba(139,43,183,0.12); color:var(--primary-dark) }
+    .options label.incorrect{ background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.12); color:var(--danger) }
+    .result-box{ margin-top:16px;padding:14px;border-radius:10px;background:#fff;border:1px solid rgba(139,43,183,0.04) }
+    .btn-row{ display:flex;gap:10px;flex-wrap:wrap;margin-top:14px }
+    .btn-small{ background:linear-gradient(90deg,var(--accent),var(--primary)); color:#fff; border:none; padding:10px 12px; border-radius:8px; cursor:pointer }
+    .btn-ghost{ background:transparent;border:1px solid rgba(157,78,209,0.12); padding:10px 12px;border-radius:8px; cursor:pointer;color:var(--primary) }
+    @media(max-width:640px){ .quiz-container{ padding:12px } .question{ padding:12px } .quiz-header{ flex-direction:column;align-items:flex-start } }
+  </style>
+</head>
+<body>
+  <header style="padding:18px;display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <h1 style="margin:0">Teste de Nivelamento — Segurança no Trabalho</h1>
+      <p style="margin:6px 0 0;color:var(--muted)">Responda e confira seu desempenho.</p>
+    </div>
+    <div>
+      <a href="seguranca-trabalho.html" class="btn-ghost">Voltar ao curso</a>
+    </div>
+  </header>
+
+  <main class="container quiz-container">
+    <form id="quizForm">
+
+      <section class="question" id="q1">
+        <h4>1. “Acidente de trabalho” é definido como:</h4>
+        <div class="options">
+          <label><input type="radio" name="q1" value="a">a) Qualquer incidente ocorrido fora do expediente.</label>
+          <label><input type="radio" name="q1" value="b">b) Um evento inesperado que resulta em lesão ou dano à saúde do trabalhador.</label>
+          <label><input type="radio" name="q1" value="c">c) Uma falha de equipamento sem danos ao funcionário.</label>
+          <label><input type="radio" name="q1" value="d">d) Apenas uma queda dentro do ambiente da empresa.</label>
+        </div>
+      </section>
+
+      <section class="question" id="q2">
+        <h4>2. A principal finalidade da Segurança do Trabalho é:</h4>
+        <div class="options">
+          <label><input type="radio" name="q2" value="a">a) Reduzir custos de operação.</label>
+          <label><input type="radio" name="q2" value="b">b) Criar regras rígidas para disciplina.</label>
+          <label><input type="radio" name="q2" value="c">c) Prevenir acidentes e promover a saúde do trabalhador.</label>
+          <label><input type="radio" name="q2" value="d">d) Aumentar a produtividade exclusivamente.</label>
+        </div>
+      </section>
+
+      <section class="question" id="q3">
+        <h4>3. “Risco” significa:</h4>
+        <div class="options">
+          <label><input type="radio" name="q3" value="a">a) Algo que sempre causa acidente.</label>
+          <label><input type="radio" name="q3" value="b">b) A probabilidade de um perigo causar danos.</label>
+          <label><input type="radio" name="q3" value="c">c) Um problema financeiro da empresa.</label>
+          <label><input type="radio" name="q3" value="d">d) Um equipamento defeituoso.</label>
+        </div>
+      </section>
+
+      <!-- Seção 2 removida conforme solicitado (conteúdos integrados diretamente) -->
+
+      <section class="question" id="q4">
+        <h4>4. A NR responsável pela CIPA é:</h4>
+        <div class="options">
+          <label><input type="radio" name="q4" value="a">a) NR 1</label>
+          <label><input type="radio" name="q4" value="b">b) NR 5</label>
+          <label><input type="radio" name="q4" value="c">c) NR 6</label>
+          <label><input type="radio" name="q4" value="d">d) NR 17</label>
+        </div>
+      </section>
+
+      <section class="question" id="q5">
+        <h4>5. A NR que trata do uso de Equipamento de Proteção Individual (EPI) é:</h4>
+        <div class="options">
+          <label><input type="radio" name="q5" value="a">a) NR 6</label>
+          <label><input type="radio" name="q5" value="b">b) NR 23</label>
+          <label><input type="radio" name="q5" value="c">c) NR 12</label>
+          <label><input type="radio" name="q5" value="d">d) NR 9</label>
+        </div>
+      </section>
+
+      <section class="question" id="q6">
+        <h4>6. A NR 17 aborda principalmente:</h4>
+        <div class="options">
+          <label><input type="radio" name="q6" value="a">a) Combate a incêndio</label>
+          <label><input type="radio" name="q6" value="b">b) Ergonomia</label>
+          <label><input type="radio" name="q6" value="c">c) Máquinas e equipamentos</label>
+          <label><input type="radio" name="q6" value="d">d) Produtos químicos</label>
+        </div>
+      </section>
+
+      <!-- Seção 3 removida conforme solicitado -->
+
+      <section class="question" id="q7">
+        <h4>7. Ruído intenso, vibrações e calor são exemplos de riscos:</h4>
+        <div class="options">
+          <label><input type="radio" name="q7" value="a">a) Biológicos</label>
+          <label><input type="radio" name="q7" value="b">b) Químicos</label>
+          <label><input type="radio" name="q7" value="c">c) Ergonômicos</label>
+          <label><input type="radio" name="q7" value="d">d) Físicos</label>
+        </div>
+      </section>
+
+      <section class="question" id="q8">
+        <h4>8. Mover caixas pesadas de forma incorreta é um risco:</h4>
+        <div class="options">
+          <label><input type="radio" name="q8" value="a">a) Físico</label>
+          <label><input type="radio" name="q8" value="b">b) Ergonômico</label>
+          <label><input type="radio" name="q8" value="c">c) Biológico</label>
+          <label><input type="radio" name="q8" value="d">d) Químico</label>
+        </div>
+      </section>
+
+      <section class="question" id="q9">
+        <h4>9. Vírus, bactérias e fungos são riscos:</h4>
+        <div class="options">
+          <label><input type="radio" name="q9" value="a">a) Físicos</label>
+          <label><input type="radio" name="q9" value="b">b) Biológicos</label>
+          <label><input type="radio" name="q9" value="c">c) Químicos</label>
+          <label><input type="radio" name="q9" value="d">d) De acidentes</label>
+        </div>
+      </section>
+
+      <!-- Seção 4 removida conforme solicitado -->
+
+      <section class="question" id="q10">
+        <h4>10. O Certificado de Aprovação (CA) de um EPI serve para:</h4>
+        <div class="options">
+          <label><input type="radio" name="q10" value="a">a) Indicar o preço do equipamento.</label>
+          <label><input type="radio" name="q10" value="b">b) Comprovar que o EPI é seguro e aprovado para uso.</label>
+          <label><input type="radio" name="q10" value="c">c) Informar o fabricante.</label>
+          <label><input type="radio" name="q10" value="d">d) Garantir conforto ao usuário.</label>
+        </div>
+      </section>
+
+      <section class="question" id="q11">
+        <h4>11. A proteção auditiva é utilizada principalmente para proteger contra:</h4>
+        <div class="options">
+          <label><input type="radio" name="q11" value="a">a) Calor</label>
+          <label><input type="radio" name="q11" value="b">b) Quedas</label>
+          <label><input type="radio" name="q11" value="c">c) Ruído excessivo</label>
+          <label><input type="radio" name="q11" value="d">d) Fumaça</label>
+        </div>
+      </section>
+
+      <section class="question" id="q12">
+        <h4>12. Óculos de proteção deve ser usado quando há risco de:</h4>
+        <div class="options">
+          <label><input type="radio" name="q12" value="a">a) Ruído</label>
+          <label><input type="radio" name="q12" value="b">b) Choque térmico</label>
+          <label><input type="radio" name="q12" value="c">c) Projeção de partículas</label>
+          <label><input type="radio" name="q12" value="d">d) Queda de objetos pesados</label>
+        </div>
+      </section>
+
+      <!-- Seção 5 removida conforme solicitado -->
+
+      <section class="question" id="q13">
+        <h4>13. Em caso de incêndio, a primeira ação correta é:</h4>
+        <div class="options">
+          <label><input type="radio" name="q13" value="a">a) Retornar para buscar objetos pessoais</label>
+          <label><input type="radio" name="q13" value="b">b) Correr rapidamente sem seguir instruções</label>
+          <label><input type="radio" name="q13" value="c">c) Avisar e seguir as rotas de fuga</label>
+          <label><input type="radio" name="q13" value="d">d) Esperar no local até alguém mandar sair</label>
+        </div>
+      </section>
+
+      <section class="question" id="q14">
+        <h4>14. O número do SAMU é:</h4>
+        <div class="options">
+          <label><input type="radio" name="q14" value="a">a) 180</label>
+          <label><input type="radio" name="q14" value="b">b) 191</label>
+          <label><input type="radio" name="q14" value="c">c) 192</label>
+          <label><input type="radio" name="q14" value="d">d) 193</label>
+        </div>
+      </section>
+
+      <section class="question" id="q15">
+        <h4>15. A RCP deve ser aplicada:</h4>
+        <div class="options">
+          <label><input type="radio" name="q15" value="a">a) Apenas por médicos</label>
+          <label><input type="radio" name="q15" value="b">b) Quando a vítima está sem pulso e sem respirar</label>
+          <label><input type="radio" name="q15" value="c">c) Sempre que a pessoa estiver consciente</label>
+          <label><input type="radio" name="q15" value="d">d) Após qualquer queda de altura</label>
+        </div>
+      </section>
+
+      <div class="btn-row">
+        <button type="button" id="gradeBtn" class="btn-small">Enviar e Corrigir</button>
+        <button type="button" id="resetBtn" class="btn-ghost">Limpar respostas</button>
+      </div>
+
+      <div id="result" class="result-box hidden"></div>
+    </form>
+  </main>
+
+  <script>
+    (function(){
+      const gabarito = {1:'b',2:'c',3:'b',4:'b',5:'a',6:'b',7:'d',8:'b',9:'b',10:'b',11:'c',12:'c',13:'c',14:'c',15:'b'};
+      const gradeBtn = document.getElementById('gradeBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const resultBox = document.getElementById('result');
+
+      function grade(){
+        let correct=0; let total=15; resultBox.innerHTML='';
+        for(let i=1;i<=total;i++){
+          const qSel = document.querySelector('input[name="q'+i+'"]:checked');
+          const qVal = qSel ? qSel.value : null;
+          const qSection = document.getElementById('q'+i);
+          // clear previous markers
+          qSection.querySelectorAll('.options label').forEach(l=>{ l.classList.remove('correct','incorrect'); });
+          // highlight correct option
+          const correctVal = gabarito[i];
+          const correctLabel = qSection.querySelector('.options input[value="'+correctVal+'"]')?.parentElement;
+          if(correctLabel) correctLabel.classList.add('correct');
+          if(qVal && qVal === correctVal){ correct++; }
+          else if(qVal && qVal !== correctVal){
+            const selectedLabel = qSection.querySelector('.options input[value="'+qVal+'"]')?.parentElement;
+            if(selectedLabel) selectedLabel.classList.add('incorrect');
+          }
+        }
+        const perc = Math.round((correct/total)*100);
+        resultBox.classList.remove('hidden');
+        resultBox.innerHTML = `<strong>Resultado:</strong> ${correct} / ${total} questões corretas (${perc}%).`;
+        // optionally give basic feedback
+        if(perc >= 70){ resultBox.innerHTML += '<p style="color:#065f46;margin-top:8px">Bom desempenho — você possui uma boa base.</p>'; }
+        else{ resultBox.innerHTML += '<p style="color:#7f1d1d;margin-top:8px">Recomenda-se revisar os módulos com baixo desempenho.</p>'; }
+        // scroll to results
+        resultBox.scrollIntoView({behavior:'smooth', block:'center'});
+      }
+
+      gradeBtn.onclick = grade;
+      resetBtn.onclick = ()=>{ document.getElementById('quizForm').reset(); document.querySelectorAll('.options label').forEach(l=>{ l.classList.remove('correct','incorrect'); }); resultBox.classList.add('hidden'); };
+    })();
+  </script>
+
+<!-- Botão de voltar fixo (history.back com fallback para seguranca-trabalho.html) -->
+<button id="backBtn" title="Voltar" aria-label="Voltar" onclick="(function(){ if(window.history && window.history.length>1){ history.back(); } else { window.location.href='seguranca-trabalho.html'; } })(); return false;">
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span>Voltar</span>
+</button>
+
+<style>
+  /* Back button styles using site palette */
+  #backBtn{ position:fixed; left:18px; top:18px; z-index:1600; display:flex; align-items:center; gap:8px; padding:10px 12px; border-radius:10px; border:none; background:linear-gradient(90deg,var(--accent),var(--primary)); color:#fff; box-shadow:0 8px 20px rgba(16,24,40,0.12); font-weight:600; cursor:pointer; }
+  #backBtn svg{ width:18px; height:18px; flex:0 0 18px }
+  @media(max-width:600px){ #backBtn{ left:12px; top:auto; bottom:16px; padding:10px; width:48px; height:48px; border-radius:999px; justify-content:center } #backBtn span{ display:none } }
+</style>
+
+</body>
+</html>

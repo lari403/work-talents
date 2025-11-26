@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Work Talents | Portal de Oportunidades</title>
+	<link rel="stylesheet" href="styles.css">
+	<script src="scripts/auth.js"></script>
+</head>
+<body>
+
+	<header>
+		<div class="header-inner">
+			<div class="header-brand">
+				<div class="brand-wrap">
+										<!-- Prefer external raster `logo2.jpg` if present, otherwise show inline SVG -->
+										<!-- Logo image removed per request; header uses semantic H1 only -->
+					<div style="display:inline-block;vertical-align:middle">
+						<h1 class="site-title">Work Talents</h1>
+						<p class="site-sub">Transformando trabalhadores em profissionais capacitados.</p>
+					</div>
+				</div>
+			</div>
+						<div class="right">
+						<nav>
+								<a href="auth.html">Entrar / Cadastrar</a>
+								<a href="gestor.html">Painel Gestor</a>
+						</nav>
+						<div id="apiStatus" class="api-status down" title="Status da API">
+								<span class="dot"></span>
+								<span class="label">API: offline</span>
+						</div>
+						<div id="lastAuthBadge" class="auth-method hidden" title="Último método de autenticação" style="margin-top:8px;font-size:0.9rem;color:var(--muted)"></div>
+						</div>
+
+
+		</div>
+	</header>
+
+
+
+	<main class="container">
+
+		<section class="section" id="cursos">
+			<h2>Cursos Disponíveis</h2>
+			<div class="card" style="margin-bottom:12px">
+				<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+					<input id="courseSearch" type="search" placeholder="Buscar cursos..." oninput="applyCourseFilters()" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eaf0" />
+					<!-- status filter removed by request -->
+					<button onclick="applyCourseFilters()">Filtrar</button>
+					<button onclick="clearLevelFilter()" id="clearLevelFilterBtn" class="btn-ghost">Limpar filtro</button>
+					<!-- per-course feedback/placement buttons moved into each course card -->
+				</div>
+			</div>
+
+			<ul class="course-list" id="coursesList">
+				<!-- cursos serão inseridos via JS -->
+			</ul>
+		</section>
+
+
+
+	</main>
+
+	<footer>
+		<p>&copy; 2025 Work Talents. Todos os direitos reservados.</p>
+	</footer>
+
+
+
+	<script>
+	// Consolidated client script: API wrapper + auth + courses + UI
+	const API_BASE = 'http://localhost:3000';
+	const USE_API = true; // try API, otherwise fallback to localStorage
+
+	async function tryApi(path, opts){
+		if(!USE_API) throw new Error('API disabled');
+		const res = await fetch(API_BASE + path, opts);
+		if(!res.ok) throw new Error('api error');
+		return await res.json();
+	}
+
+	async function apiGetUsers(){ return tryApi('/users'); }
+	async function apiCreateUser(payload){ return tryApi('/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }
+	async function apiGetCourses(){ return tryApi('/courses'); }
+	async function apiCreateCourse(payload){ return tryApi('/courses',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }
+	async function apiUpdateCourse(id,payload){ return tryApi('/courses/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }
+	async function apiDeleteCourse(id){ return tryApi('/courses/'+id,{method:'DELETE'}); }
+
+	function ls_get(key, def){ try{ return JSON.parse(localStorage.getItem(key) || JSON.stringify(def)); }catch(e){return def} }
+	function ls_set(key,val){ localStorage.setItem(key, JSON.stringify(val)); }
+
+	async function hashPassword(password){ const enc=new TextEncoder(); const data=enc.encode(password); const hashBuffer=await crypto.subtle.digest('SHA-256',data); return Array.from(new Uint8Array(hashBuffer)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+
+	function getUsersLocal(){ return ls_get('cm_users', []); }
+	function saveUsersLocal(list){ ls_set('cm_users', list); }
+
+	function setCurrentUser(user){ ls_set('cm_current', user); renderUserState(); }
+	function getCurrentUser(){ return ls_get('cm_current', null); }
+
+	function setMsg(id, text, level){ const el=document.getElementById(id); if(!el) return; el.textContent=text; el.classList.toggle('success', level==='success'); const inputMap = {regNameMsg:'regName',regEmailMsg:'regEmail',regPasswordMsg:'regPassword',regGestorCodeMsg:'regGestorCode',loginEmailMsg:'loginEmail',loginPasswordMsg:'loginPassword'}; Object.keys(inputMap).forEach(k=>{ const inp=document.getElementById(inputMap[k]); if(inp){ inp.classList.remove('input-error','input-success') }}); if(level==='success'){ const mapped=inputMap[id]; if(mapped){ document.getElementById(mapped).classList.add('input-success') }} else { const mapped=inputMap[id]; if(mapped){ document.getElementById(mapped).classList.add('input-error') }} }
+	function clearMessages(ids){ ids.forEach(i=>{ const e=document.getElementById(i); if(e){ e.textContent=''; e.classList.remove('success') } }); ['regName','regEmail','regPassword','regGestorCode','loginEmail','loginPassword'].forEach(id=>{ const inp=document.getElementById(id); if(inp){ inp.classList.remove('input-error','input-success') } }) }
+	function validateEmail(v){ return !!v && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) }
+
+	async function register(){
+		clearMessages(['regNameMsg','regEmailMsg','regPasswordMsg','regGestorCodeMsg']);
+		const name=document.getElementById('regName').value.trim();
+		const email=document.getElementById('regEmail').value.trim().toLowerCase();
+		const password=document.getElementById('regPassword').value;
+		const gestorCode=document.getElementById('regGestorCode').value.trim();
+		let hasError=false;
+		if(!name){ setMsg('regNameMsg','Preencha o nome.'); hasError=true }
+		if(!validateEmail(email)){ setMsg('regEmailMsg','Email inválido.'); hasError=true }
+		if(!password || password.length<6){ setMsg('regPasswordMsg','Senha deve ter ao menos 6 caracteres.'); hasError=true }
+		if(hasError) return;
+		const hashed=await hashPassword(password);
+		const role = (gestorCode && gestorCode === 'CODIGO-GESTOR-2025') ? 'gestor' : 'user';
+		try{
+			const users = await apiGetUsers();
+			if(users.find(u=>u.email===email)){ setMsg('regEmailMsg','Email já cadastrado.'); return }
+			await apiCreateUser({name,email,role,passwordHash:hashed}); setMsg('regEmailMsg','Cadastro realizado com sucesso!','success'); setCurrentUser({name,email,role}); document.getElementById('registerForm').reset();
+		}catch(e){
+			// fallback: try auth module's local register if available
+			try{
+				if(window.__CM_auth && typeof window.__CM_auth.registerLocal === 'function'){
+					await window.__CM_auth.registerLocal({ name, email, password, gestorCode });
+					setMsg('regEmailMsg','Cadastro local realizado!','success');
+					document.getElementById('registerForm').reset();
+					return;
+				}
+			}catch(err){ setMsg('regEmailMsg', err.message || 'Erro no cadastro local.'); return }
+			// final fallback: inline local save
+			const users=getUsersLocal();
+			if(users.find(u=>u.email===email)){ setMsg('regEmailMsg','Email já cadastrado.'); return }
+			users.push({id:Date.now(),name,email,role,passwordHash:hashed});
+			saveUsersLocal(users);
+			setMsg('regEmailMsg','Cadastro local realizado!','success');
+			setCurrentUser({name,email,role});
+			document.getElementById('registerForm').reset();
+		}
+	}
+
+	async function login(){
+		clearMessages(['loginEmailMsg','loginPasswordMsg']);
+		const email=document.getElementById('loginEmail').value.trim().toLowerCase();
+		const password=document.getElementById('loginPassword').value;
+		let hasError=false;
+		if(!validateEmail(email)){ setMsg('loginEmailMsg','Email inválido.'); hasError=true }
+		if(!password){ setMsg('loginPasswordMsg','Informe a senha.'); hasError=true }
+		if(hasError) return;
+		const hashed=await hashPassword(password);
+		try{
+			const users=await apiGetUsers(); const user = users.find(u=>u.email===email); if(!user){ setMsg('loginEmailMsg','Usuário não encontrado.'); return } if(user.passwordHash !== hashed){ setMsg('loginPasswordMsg','Senha incorreta.'); return } setCurrentUser({name:user.name,email:user.email,role:user.role}); setMsg('loginEmailMsg','Login efetuado com sucesso!','success'); document.getElementById('loginForm').reset();
+		}catch(e){
+			try{
+				if(window.__CM_auth && typeof window.__CM_auth.loginLocal === 'function'){
+					await window.__CM_auth.loginLocal({ email, password });
+					setMsg('loginEmailMsg','Login local efetuado!','success');
+					document.getElementById('loginForm').reset();
+					return;
+				}
+			}catch(err){ setMsg('loginEmailMsg', err.message || 'Erro no login local.'); return }
+			const users=getUsersLocal(); const user=users.find(u=>u.email===email); if(!user){ setMsg('loginEmailMsg','Usuário não encontrado.'); return } if(user.passwordHash !== hashed){ setMsg('loginPasswordMsg','Senha incorreta.'); return } setCurrentUser({name:user.name,email:user.email,role:user.role}); setMsg('loginEmailMsg','Login local efetuado!','success'); document.getElementById('loginForm').reset();
+		}
+	}
+
+	function logout(){ localStorage.removeItem('cm_current'); renderUserState(); }
+
+	// level filter applied by placement suggestion; null means no filter
+	let CURRENT_LEVEL_FILTER = null;
+
+	async function loadCourses(){
+		try{
+			const c = await apiGetCourses();
+			console.log('DEBUG: loadCourses() -> apiGetCourses returned', c);
+			renderCoursesList(c); 
+		}catch(e){
+			// If API is unavailable, try to load courses from the local `db.json` served by the static server
+			try{
+				const resp = await fetch('/db.json');
+				if(resp.ok){
+					const jd = await resp.json();
+					const c = jd.courses || [];
+					console.log('DEBUG: loadCourses() -> fetched /db.json, courses:', c);
+					renderCoursesList(c);
+					return;
+				}
+			}catch(fetchErr){
+				// ignore and fallback to localStorage
+			}
+			// final fallback: localStorage key (previous demo data)
+			const c = ls_get('cm_demo_courses', null) || JSON.parse(localStorage.getItem('cm_demo_courses') || '[]');
+			renderCoursesList(c);
+		}
+	}
+
+		function renderCoursesList(list){
+			const ul=document.getElementById('coursesList'); if(!ul) return;
+			const q=(document.getElementById('courseSearch')?.value||'').toLowerCase();
+			const filtered=list.filter(c=>{
+				if(CURRENT_LEVEL_FILTER && String(c.level||'').toLowerCase() !== String(CURRENT_LEVEL_FILTER).toLowerCase()) return false;
+				if(!q) return true;
+				return ((c.title||'')+' '+(c.description||'')).toLowerCase().includes(q);
+			});
+			ul.innerHTML='';
+			filtered.forEach(c=>{
+				const li=document.createElement('li'); li.dataset.id = c.id || '';
+				// debug: log course id and image presence
+				console.log('DEBUG: renderCoursesList course', { id: c.id, title: c.title, image: c.image });
+
+				// create thumbnail only when course has an image property
+				let img = null;
+				if(c.image){
+					img = document.createElement('img'); img.className = 'course-thumb';
+					img.src = 'images/' + c.image;
+					img.alt = c.title || 'Curso';
+					img.onerror = function(){ this.onerror=null; this.src = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="100%" height="100%" fill="#f3f0fb"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#6b7280" font-family="Segoe UI, Tahoma, sans-serif" font-size="14">Imagem indisponível</text></svg>'); }
+				}
+
+				const head = document.createElement('div'); head.className = 'course-item-head';
+				const title = document.createElement('div'); title.className = 'course-item-title'; title.textContent=c.title;
+				const meta = document.createElement('div'); meta.className='course-item-meta'; meta.textContent = '';
+				// level badge
+				if(c.level){ const lv = document.createElement('span'); lv.style.marginLeft='10px'; lv.style.fontSize='0.85rem'; lv.style.padding='4px 8px'; lv.style.borderRadius='8px'; lv.style.background='#f3f0fb'; lv.style.color='var(--primary-dark)'; lv.textContent = c.level; meta.appendChild(lv); }
+				head.appendChild(title); head.appendChild(meta);
+				// we no longer render the inline description on the card (only title + buttons)
+				// If you want a short subtitle in the future, we can add `c.subtitle` or similar.
+				const desc = null;
+				// detect if current user is already enrolled (local cached enrollments)
+				let enrolled = false;
+				try{
+					const current = (typeof getCurrentUser === 'function') ? getCurrentUser() : null;
+					if(current){
+						const enrolls = JSON.parse(localStorage.getItem('cm_enrollments')||'[]');
+						if(Array.isArray(enrolls) && enrolls.some(e=>e.courseId == c.id && e.user && e.user.email === current.email)) enrolled = true;
+					}
+				}catch(e){ enrolled = false; }
+
+				const actions = document.createElement('div'); actions.className = 'course-actions';
+
+				// badge removed per request: no visible 'Matriculado' label on course cards
+				// action buttons: Saber mais | Gerar certificado | Enviar feedback | Teste de nivelamento
+				const moreBtn = document.createElement('button');
+				moreBtn.className = 'btn-small';
+				moreBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:8px;vertical-align:middle"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M12 8v.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 11v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Saber mais';
+				moreBtn.onclick = ()=>openCourseModal(c);
+
+
+
+				const fbBtn = document.createElement('button');
+				fbBtn.className = 'btn-small';
+				fbBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:8px;vertical-align:middle"><path d="M21 15a2 2 0 0 1-2 2H8l-5 3V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z" stroke="#fff" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" fill="none"/><path d="M7 8h10" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/><path d="M7 12h6" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/></svg>Enviar feedback';
+				fbBtn.onclick = ()=>{ try{ const courseParam = c && c.title ? ('?course=' + encodeURIComponent(c.title)) : ''; window.location.href = 'feedback.html' + courseParam; }catch(e){ window.location.href = 'feedback.html'; } };
+
+				const plBtn = document.createElement('button');
+				plBtn.className = 'btn-small';
+				plBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:8px;vertical-align:middle"><rect x="3" y="3" width="12" height="18" rx="1.5" stroke="#fff" stroke-width="1.2" fill="none"/><path d="M8 7l1.5 1.5L12 6" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 11l1.5 1.5L12 10" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Teste de nivelamento';
+				plBtn.onclick = ()=>{
+					try{
+						// If this is the Segurança course, go to the dedicated nivelamento page
+						if(c && String(c.title||'').toLowerCase().includes('seguran')){
+							window.location.href = 'seguranca-nivelamento.html';
+							return;
+						}
+						// If an external placement modal handler exists, use it
+						if(window.__CM_placement && typeof window.__CM_placement.openModal === 'function'){
+							window.__CM_placement.openModal(c.title || String(c.id || ''));
+							return;
+						}
+						// Fallback: open the built-in placement modal if present
+						const pm = document.getElementById('placementModal');
+						if(pm){ pm.classList.remove('hidden'); }
+					}catch(e){ console.error('plBtn click error', e); }
+				};
+
+				const aulasBtn = document.createElement('button');
+				aulasBtn.className = 'btn-small';
+				aulasBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:8px;vertical-align:middle"><path d="M3 7h18M3 12h18M3 17h18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Aulas';
+				aulasBtn.onclick = ()=>openCourseLessons(c);
+
+				actions.appendChild(moreBtn);
+				actions.appendChild(aulasBtn);
+				actions.appendChild(fbBtn);
+				actions.appendChild(plBtn);
+
+				// layout: thumbnail + content column
+				const content = document.createElement('div'); content.style.flex='1';
+				content.appendChild(head);
+				// do not append a long description to keep cards compact
+				content.appendChild(actions);
+				const row = document.createElement('div'); row.style.display='flex'; row.style.gap='12px'; row.style.alignItems='flex-start';
+				// append thumbnail (if created) and the content column
+				if(img) row.appendChild(img);
+				row.appendChild(content);
+				li.appendChild(row);
+				ul.appendChild(li);
+			});
+		}
+
+
+	function applyCourseFilters(){ loadCourses(); }
+
+	async function addDemoCourse(){ const title='Curso demo '+Date.now(); try{ await apiCreateCourse({title,description:'Adicionado via painel'}); loadCourses(); }catch(e){ const list=JSON.parse(localStorage.getItem('cm_demo_courses')||'[]'); list.push({id:Date.now(),title,description:''}); localStorage.setItem('cm_demo_courses',JSON.stringify(list)); renderGestorCourses(); loadCourses(); } }
+
+	function renderGestorCourses(){ const ul=document.getElementById('gestorCourses'); if(!ul) return; ul.innerHTML=''; const list=JSON.parse(localStorage.getItem('cm_demo_courses')||'[]'); list.forEach(c=>{ const li=document.createElement('li'); li.textContent=c.title; ul.appendChild(li); }); }
+
+	function renderUserState(){ const current=getCurrentUser(); const userArea=document.getElementById('userArea'); const gestorPanel=document.getElementById('gestorPanel'); const welcome=document.getElementById('welcomeMsg'); if(current){ userArea.classList.remove('hidden'); welcome.textContent=`Olá, ${current.name} (${current.role})`; if(current.role==='gestor'){ gestorPanel.classList.remove('hidden'); renderGestorCourses(); } else { gestorPanel.classList.add('hidden'); } } else { userArea.classList.add('hidden'); gestorPanel.classList.add('hidden'); } }
+
+	/* Certificate generation removed: feature deprecated per request */
+
+	(async function init(){ try{ const users=await apiGetUsers(); if(Array.isArray(users) && users.length===0){} }catch(e){ const users=getUsersLocal(); if(!users.find(u=>u.role==='gestor')){ const pw='Gestor@123'; const hash=await hashPassword(pw); users.push({id:Date.now(),name:'Gestor Exemplo',email:'gestor@worktalents',role:'gestor',passwordHash:hash}); saveUsersLocal(users); console.info('Conta gestor local criada: gestor@worktalents / Gestor@123'); } } loadCourses(); renderUserState();
+		// show last auth method badge if present
+		try{
+			const last = localStorage.getItem('cm_lastAuthMethod');
+			const b = document.getElementById('lastAuthBadge');
+			if(b){
+				if(last){ b.classList.remove('hidden'); b.textContent = 'Último login: ' + last; b.classList.toggle('api', last==='API'); b.classList.toggle('local', last==='Local'); }
+				else { b.classList.add('hidden'); }
+			}
+		}catch(e){}
+
+			// remove demo courses (user requested)
+			try{ localStorage.removeItem('cm_demo_courses'); }catch(e){ console.error('failed to remove demo courses', e) }
+
+
+	})();
+
+	// (header dropdown removed) smooth-scroll helper removed
+
+	// Course detail modal helpers
+	function openCourseModal(course){
+		try{
+			const m = document.getElementById('courseDetailModal'); const t = document.getElementById('courseModalTitle'); const b = document.getElementById('courseModalBody');
+			if(!m||!t||!b) return;
+			t.textContent = course.title || 'Curso';
+				// format description into paragraphs and bold labels like 'Foco:', 'Objetivos:'
+				b.innerHTML = formatCourseDescriptionHTML(course);
+			m.classList.remove('hidden');
+			// enroll button behaviour (for prototype just shows alert)
+					const enroll = document.getElementById('courseModalEnroll'); if(enroll){ enroll.onclick = ()=>{ enrollCourse(course); }; enroll.textContent='Matricular'; enroll.disabled=false; }
+			const close = document.getElementById('courseModalClose'); if(close){ close.onclick = ()=>{ m.classList.add('hidden'); } }
+		}catch(e){ console.error(e) }
+	}
+
+		// enroll in a course (save to localStorage)
+		function enrollCourse(course){
+			try{
+					const user = (typeof getCurrentUser === 'function') ? getCurrentUser() : null;
+					const record = { id: Date.now(), courseId: course.id, title: course.title, at: new Date().toISOString(), user: user ? { name: user.name, email: user.email } : null };
+					// try to save to API first
+					(async ()=>{
+						try{
+							const res = await fetch(API_BASE + '/enrollments', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(record) });
+							if(res.ok){ const saved = await res.json(); // also store locally (replace any local-only duplicate)
+								let list = JSON.parse(localStorage.getItem('cm_enrollments')||'[]');
+								// remove any local-only pending items for same user+course
+								list = list.filter(e => !(e.courseId == record.courseId && record.user && e.user && e.user.email === record.user.email && e._localOnly));
+								list.push(saved);
+								localStorage.setItem('cm_enrollments', JSON.stringify(list));
+								// enrollment saved to API (no alert shown)
+								const enrollBtn = document.getElementById('courseModalEnroll'); if(enrollBtn){ enrollBtn.textContent = 'Matriculado'; enrollBtn.disabled = true }
+								setTimeout(()=>{ document.getElementById('courseDetailModal')?.classList.add('hidden'); }, 800);
+								// refresh courses UI to show badge
+								loadCourses();
+								return;
+							}
+							throw new Error('api-save-failed');
+						}catch(apiErr){
+							// fallback: save locally and mark as pending (_localOnly)
+							const list = JSON.parse(localStorage.getItem('cm_enrollments')||'[]');
+							record._localOnly = true;
+							list.push(record);
+							localStorage.setItem('cm_enrollments', JSON.stringify(list));
+							// enrollment saved locally (pending sync) — no alert shown
+							const enrollBtn = document.getElementById('courseModalEnroll'); if(enrollBtn){ enrollBtn.textContent = 'Matriculado'; enrollBtn.disabled = true }
+							setTimeout(()=>{ document.getElementById('courseDetailModal')?.classList.add('hidden'); }, 800);
+							// refresh courses UI to show badge immediately
+							loadCourses();
+							return;
+						}
+					})();
+			}catch(e){ console.error(e); }
+		}
+
+		// format course description into HTML with paragraphs and bolded labels
+		function formatCourseDescriptionHTML(course){
+			const raw = course.description || '';
+			const parts = raw.split('\n\n').map(p=>p.trim()).filter(Boolean);
+			const html = parts.map(p => {
+				const idx = p.indexOf(':');
+				if(idx>0){ const label = p.slice(0,idx+1); const rest = p.slice(idx+1).trim(); return `<p><strong>${escapeHtml(label)}</strong> ${escapeHtml(rest)}</p>`; }
+				return `<p>${escapeHtml(p)}</p>`;
+			}).join('');
+			if(course.level){ return html + `<p><strong>Nível sugerido:</strong> ${escapeHtml(course.level)}</p>`; }
+			return html;
+		}
+
+		function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+		// Open the lessons list for a course. If the course has a `lessons` array,
+		// render them; otherwise show a fallback message.
+		function openCourseLessons(course){
+			try{
+				// If this is the Segurança no trabalho course, open the dedicated page
+				if(course && String(course.title || '').toLowerCase().includes('seguran')){
+					// Redirect to the fixed modules page which includes the certificate button
+					window.location.href = 'seguranca-trabalho-fixed.html';
+					return;
+				}
+				let modal = document.getElementById('lessonsModal');
+				if(!modal){
+					// create modal if missing (kept minimal and consistent with other modals)
+					modal = document.createElement('div'); modal.id = 'lessonsModal'; modal.className = 'hidden';
+					modal.style.position = 'fixed'; modal.style.inset = '0'; modal.style.background = 'rgba(16,24,40,0.45)'; modal.style.zIndex = '1450';
+					const card = document.createElement('div'); card.className = 'card'; card.style.width = '640px'; card.style.maxWidth = '94%';
+					card.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+						<h3 id="lessonsModalTitle">Aulas</h3>
+						<button id="lessonsModalClose" class="btn-ghost">Fechar</button>
+					</div>
+					<div id="lessonsModalBody" style="margin-top:8px;color:var(--muted)"></div>`;
+					modal.appendChild(card); document.body.appendChild(modal);
+					const close = document.getElementById('lessonsModalClose'); if(close) close.onclick = ()=>{ modal.classList.add('hidden'); }
+				}
+				const titleEl = document.getElementById('lessonsModalTitle'); const bodyEl = document.getElementById('lessonsModalBody');
+				titleEl.textContent = 'Aulas — ' + (course.title || 'Curso');
+				// render lessons
+				const lessons = Array.isArray(course.lessons) ? course.lessons : [];
+				if(lessons.length === 0){ bodyEl.innerHTML = '<p>Nenhuma aula cadastrada para este curso.</p>'; }
+				else{
+					const ul = document.createElement('ul'); ul.style.paddingLeft='18px'; ul.style.margin=0; ul.style.listStyle='disc';
+					lessons.forEach((ls, idx)=>{
+						const li = document.createElement('li'); li.style.marginBottom='8px';
+						const txt = document.createElement('span'); txt.textContent = ls.title || ('Aula ' + (idx+1)); txt.style.marginRight='10px';
+						const openBtn = document.createElement('button'); openBtn.className='btn-small'; openBtn.style.marginLeft='6px'; openBtn.textContent='Abrir';
+						openBtn.onclick = ()=>openLesson(ls);
+						li.appendChild(txt); li.appendChild(openBtn); ul.appendChild(li);
+					});
+					bodyEl.innerHTML = ''; bodyEl.appendChild(ul);
+				}
+				modal.classList.remove('hidden');
+			}catch(e){ console.error('openCourseLessons error', e); alert('Erro ao abrir aulas.'); }
+		}
+
+		function openLesson(lesson){
+			try{
+				if(!lesson) return alert('Aula inválida.');
+				if(lesson.url){ window.open(lesson.url, '_blank'); return; }
+				if(lesson.content){ // show small content modal
+					alert((lesson.title ? lesson.title + '\n\n' : '') + lesson.content);
+					return;
+				}
+				alert('Aula sem conteúdo disponível.');
+			}catch(e){ console.error(e); alert('Erro ao abrir a aula.'); }
+		}
+
+		// clear the level filter applied by placement-test
+		function clearLevelFilter(){ try{ window.CURRENT_LEVEL_FILTER = null; applyCourseFilters(); }catch(e){}
+			// also remove placementSummary display if present
+			const ps = document.getElementById('placementSummary'); if(ps) ps.remove(); }
+	</script>
+	<script src="scripts/sync.js"></script>
+	<script src="scripts/ai-widget.js"></script>
+
+	<!-- Feedback modal (moved out so it can open independently of courseModal) -->
+	<div id="feedbackModal" class="hidden">
+		<div class="card">
+			<h3>Enviar Feedback</h3>
+			<form id="feedbackForm" class="feedback-form" onsubmit="event.preventDefault(); submitFeedback();">
+				<div class="row">
+					<input id="fbName" placeholder="Seu nome (opcional)" />
+					<input id="fbEmail" placeholder="Email (opcional)" />
+				</div>
+				<label>Mensagem</label>
+				<textarea id="fbMessage" placeholder="Conte-nos sua sugestão, problema ou elogio"></textarea>
+				<label>Classificação (1-5)</label>
+				<select id="fbRating"><option value="5">5 - Excelente</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1 - Ruim</option></select>
+				<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+					<button type="button" id="fbCancel" class="btn-ghost">Cancelar</button>
+					<button type="submit">Enviar</button>
+				</div>
+				<div class="feedback-msg" id="fbMsg"></div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Placement test modal -->
+	<div id="placementModal" class="hidden">
+		<div class="card">
+			<h3>Teste de Nivelamento</h3>
+			<div id="placementContent">
+				<!-- perguntas serão renderizadas via JS -->
+			</div>
+			<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+				<button type="button" id="placementCancel" class="btn-ghost">Cancelar</button>
+				<button type="button" id="placementStart" class="btn-small">Iniciar</button>
+			</div>
+			<div id="placementResult" class="hidden" style="margin-top:12px"></div>
+		</div>
+	</div>
+
+	<script src="scripts/feedback.js"></script>
+	<script src="scripts/placement-test.js"></script>
+
+	<script src="scripts/feedback.js"></script>
+	<script src="scripts/courses-ui.js"></script>
+
+	<!-- Course detail modal -->
+	<div id="courseDetailModal" class="hidden" style="position:fixed;inset:0;background:rgba(16,24,40,0.45);z-index:1400">
+		<div class="card" style="width:640px;max-width:94%;">
+			<div style="display:flex;justify-content:space-between;align-items:center">
+				<h3 id="courseModalTitle">Curso</h3>
+				<button id="courseModalClose" class="btn-ghost">Fechar</button>
+			</div>
+			<div id="courseModalBody" style="margin-top:8px;white-space:pre-wrap;color:var(--muted)"></div>
+			<div style="display:flex;justify-content:flex-end;margin-top:12px"><button id="courseModalEnroll" class="btn-small">Matricular</button></div>
+		</div>
+	</div>
+
+
+
+</body>
+</html>

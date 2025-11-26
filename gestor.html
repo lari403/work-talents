@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Painel de Gestores — Work Talents</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+  <h1>Painel de Gestores — Work Talents</h1>
+    <p>Área restrita a gestores. Recursos de administração local (prototipagem).</p>
+  </header>
+
+  <div id="notAllowed" class="card hidden">
+    <h2>Acesso negado</h2>
+    <p>Você precisa estar logado como gestor para acessar esta página.</p>
+    <p><a class="button-link" href="index.html">Voltar para o site</a></p>
+  </div>
+
+  <div id="panel" class="card hidden">
+    <h2 id="welcome"></h2>
+    <div class="btn-row">
+      <button onclick="addCourse()">Adicionar curso</button>
+      <button onclick="clearCourses()">Limpar cursos</button>
+      <button onclick="logout()">Sair</button>
+    </div>
+
+    <h3>Cursos cadastrados</h3>
+    <ul id="coursesList"></ul>
+    <h3>Arquivos do gestor</h3>
+    <div id="gestorFiles">Carregando arquivos...</div>
+    <p><a class="button-link" href="index.html">Voltar ao site público</a></p>
+  </div>
+
+  <script>
+    // Checa usuário atual em localStorage
+    function getCurrentUser(){
+      try{return JSON.parse(localStorage.getItem('cm_current')||'null')}catch(e){return null}
+    }
+
+    function requireGestor(){
+      const u = getCurrentUser();
+      if(!u || u.role !== 'gestor'){
+        document.getElementById('notAllowed').classList.remove('hidden');
+        document.getElementById('panel').classList.add('hidden');
+        return false;
+      }
+      document.getElementById('notAllowed').classList.add('hidden');
+      document.getElementById('panel').classList.remove('hidden');
+      document.getElementById('welcome').textContent = `Olá, ${u.name} — Painel de Gestor`;
+      renderCourses();
+      return true;
+    }
+
+    async function renderCourses(){
+      const ul = document.getElementById('coursesList');
+      ul.innerHTML = '';
+      let list = [];
+      try{
+        const res = await fetch('http://localhost:3000/courses');
+        if(res.ok) list = await res.json();
+      }catch(e){ list = JSON.parse(localStorage.getItem('cm_demo_courses')||'[]'); }
+      list.forEach(c=>{
+        const li = document.createElement('li');
+        const title = document.createElement('div'); title.style.fontWeight='600'; title.textContent = c.title + (c.status?(' — '+c.status):'');
+        const desc = document.createElement('div'); desc.style.color = 'var(--muted)'; desc.style.fontSize='0.95rem'; desc.textContent = c.description || '';
+        const btn = document.createElement('button'); btn.style.marginLeft = '8px'; btn.textContent = 'Remover'; btn.onclick = ()=>{ removeCourse(c.id); };
+        const edit = document.createElement('button'); edit.style.marginLeft='8px'; edit.textContent='Editar'; edit.onclick = ()=>{ editCourse(c); };
+        li.appendChild(title); li.appendChild(desc); li.appendChild(edit); li.appendChild(btn); ul.appendChild(li);
+      })
+    }
+
+    // carregar arquivos do gestor (verifica existência e exibe links)
+    async function loadGestorFiles(){
+      const container = document.getElementById('gestorFiles');
+      if(!container) return;
+      container.innerHTML = '';
+      // lista de arquivos esperados (atualize se subir novos arquivos)
+      const files = [
+        'c129924b-551b-433f-86c9-c0e8ae8dfed6.pdf',
+        'banco de dados 3.pdf'
+      ];
+
+      // helper: load script dynamically
+      function loadScript(src){
+        return new Promise((resolve,reject)=>{
+          const s = document.createElement('script'); s.src = src; s.onload = ()=>resolve(); s.onerror = reject; document.head.appendChild(s);
+        });
+      }
+
+      // load PDF.js from CDN if not present
+      if(typeof window['pdfjsLib'] === 'undefined'){
+        try{
+          await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js');
+          // set workerSrc to CDN
+          if(window.pdfjsLib) window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+        }catch(e){ console.warn('Não foi possível carregar PDF.js', e); }
+      }
+
+      // first try to render images if present (preferred)
+      const imageNames = ['gestor-preview.png','gestor-preview.jpg','gestor-preview.webp','gestor-preview.jpeg'];
+      for(const imgName of imageNames){
+        try{
+          const rImg = await fetch(imgName, { method: 'HEAD' });
+          if(rImg.ok){
+            const img = document.createElement('img'); img.src = imgName; img.style.maxWidth='100%'; img.alt = 'Preview do gestor';
+            const wrap = document.createElement('div'); wrap.appendChild(img);
+            container.appendChild(wrap);
+            break; // show first found image
+          }
+        }catch(e){}
+      }
+
+      for(const f of files){
+        try{
+          const res = await fetch(encodeURI(f), { method: 'GET' });
+          if(!res.ok) continue;
+            const arrayBuffer = await res.arrayBuffer();
+          // if pdfjs available, render first page to canvas and convert to image
+          if(window.pdfjsLib && window.pdfjsLib.getDocument){
+            const pdf = await window.pdfjsLib.getDocument({data: arrayBuffer}).promise;
+            const page = await pdf.getPage(1);
+            const viewport = page.getViewport({ scale: 1.5 });
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = Math.floor(viewport.width);
+            canvas.height = Math.floor(viewport.height);
+            await page.render({ canvasContext: ctx, viewport }).promise;
+            const dataUrl = canvas.toDataURL('image/png');
+            const img = document.createElement('img'); img.src = dataUrl; img.style.maxWidth = '100%'; img.style.border = '1px solid #e6e6ef'; img.alt = f;
+            const caption = document.createElement('div'); caption.style.marginTop = '6px'; caption.textContent = f.replace(/[-_]/g,' ');
+            const wrap = document.createElement('div'); wrap.appendChild(img); wrap.appendChild(caption);
+            container.appendChild(wrap);
+          } else {
+            // fallback: show link to PDF
+            const a = document.createElement('a'); a.href = f; a.target = '_blank'; a.textContent = f.replace(/[-_]/g,' ');
+            const div = document.createElement('div'); div.appendChild(a); container.appendChild(div);
+          }
+        }catch(e){ console.error('Erro ao renderizar PDF', e); }
+      }
+      if(container.innerHTML === '') container.textContent = 'Nenhum arquivo disponível.';
+    }
+
+    async function addCourse(){
+      const title = prompt('Título do curso:','Novo curso');
+      if(!title) return;
+      const description = prompt('Descrição do curso:', 'Descrição aqui') || '';
+      let status = prompt('Status (published/draft):','published') || 'published';
+      status = (status==='published') ? 'published' : 'draft';
+      try{
+        const res = await fetch('http://localhost:3000/courses',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,description,status})});
+        if(res.ok) return renderCourses();
+      }catch(e){
+        const list = JSON.parse(localStorage.getItem('cm_demo_courses')||'[]'); list.push({id:Date.now(),title,description,status}); localStorage.setItem('cm_demo_courses',JSON.stringify(list)); renderCourses();
+      }
+    }
+
+    async function removeCourse(id){
+      try{
+        const res = await fetch('http://localhost:3000/courses/'+id,{method:'DELETE'});
+        if(res.ok) return renderCourses();
+      }catch(e){
+        let list = JSON.parse(localStorage.getItem('cm_demo_courses')||'[]'); list = list.filter(c=>c.id!==id); localStorage.setItem('cm_demo_courses',JSON.stringify(list)); renderCourses();
+      }
+    }
+
+    async function editCourse(c){
+      const title = prompt('Editar título', c.title);
+      if(title==null) return; // cancel
+  const descriptionPrompt = prompt('Editar descrição', c.description || '');
+  const description = (descriptionPrompt === null) ? (c.description || '') : descriptionPrompt;
+  let status = prompt('Status (published/draft):', c.status || 'published') || (c.status||'draft');
+      status = (status==='published') ? 'published' : 'draft';
+      try{
+        const payload = Object.assign({}, c, {title, description, status});
+        const res = await fetch('http://localhost:3000/courses/'+c.id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        if(res.ok) return renderCourses();
+      }catch(e){
+        let list = JSON.parse(localStorage.getItem('cm_demo_courses')||'[]');
+        list = list.map(x=> x.id===c.id?Object.assign({},x,{title,description,status}):x ); localStorage.setItem('cm_demo_courses',JSON.stringify(list)); renderCourses();
+      }
+    }
+
+    function clearCourses(){
+      if(confirm('Remover todos os cursos demo?')){
+        localStorage.removeItem('cm_demo_courses');
+        renderCourses();
+      }
+    }
+
+    function logout(){
+      localStorage.removeItem('cm_current');
+      alert('Você foi desconectado.');
+      location.href = 'index.html';
+    }
+
+    // Ao carregar, checar permissões
+    if(requireGestor()) loadGestorFiles();
+  </script>
+</body>
+</html>
