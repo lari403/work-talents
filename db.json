@@ -1,0 +1,67 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Gestor Exemplo",
+  "email": "gestor@worktalents",
+      "role": "gestor",
+      "passwordHash": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
+    }
+  ],
+  "courses": [
+    {
+      "id": 1,
+      "title": "Segurança no Trabalho",
+      "description": "Foco: Prevenção de acidentes e promoção de um ambiente de trabalho saudável.\n\nObjetivo: Garantir o bem-estar físico e mental dos profissionais, reduzindo riscos e aumentando a produtividade.\n\nFerramentas: Treinamentos, uso de EPIs, pausas ergonômicas e campanhas de conscientização.",
+      "status": "published"
+    },
+    {
+      "id": 2,
+      "title": "Informática Básica",
+      "description": "Foco: Uso eficiente da tecnologia para otimizar processos e facilitar a comunicação.\n\nObjetivo: Desenvolver soluções digitais que tornem o trabalho mais ágil, seguro e inovador.\n\nFerramentas: Computadores, softwares, redes e sistemas de segurança da informação.",
+      "status": "published"
+    },
+    
+    {
+      "id": 4,
+      "title": "Controladoria, Finanças Corporativas e Compliance",
+      "description": "Foco: Governança financeira, transparência e integridade.\n\nObjetivos: Assegurar a saúde financeira e o cumprimento de normas e políticas internas/externas.\n\nPrincipais práticas: Planejamento orçamentário, análise de desempenho, gestão de riscos e auditoria.",
+      "status": "published"
+    }
+    ,
+    {
+      "id": 5,
+      "title": "Logística, Supply Chain e E-commerce",
+      "description": "Foco: Eficiência operacional e integração entre cadeia de suprimentos e canais digitais.\n\nObjetivos: Reduzir custos, otimizar prazos e aumentar a satisfação do cliente.\n\nTendências: Automação, rastreabilidade, sustentabilidade logística e experiência omnichannel.",
+      "status": "published"
+    }
+    ,
+    {
+      "id": 6,
+      "title": "ESG (Environmental, Social and Governance)",
+      "description": "Foco: Sustentabilidade e responsabilidade corporativa.\n\nObjetivos: Integrar critérios ambientais, sociais e de governança à estratégia empresarial.\n\nIndicadores: Emissões de carbono, diversidade, ética nos negócios e impacto social positivo.",
+      "status": "published"
+    }
+    ,
+    {
+      "id": 7,
+      "title": "Liderança Inclusiva e Gestão da Diversidade",
+      "description": "Foco: Cultura organizacional equitativa e valorização das diferenças.\n\nObjetivos: Criar ambientes de trabalho inovadores, produtivos e seguros psicologicamente.\n\nCompetências-chave: Escuta ativa, empatia, gestão de vieses inconscientes e incentivo à participação.",
+      "status": "published"
+    }
+    ,
+    {
+      "id": 8,
+      "title": "Delegação Efetiva e Foco na Autonomia (Empowerment)",
+      "description": "Foco: Distribuição inteligente de responsabilidades.\n\nObjetivos: Desenvolver equipes autônomas e aumentar a produtividade.\n\nFerramentas: Metas claras, feedback contínuo e cultura de confiança.",
+      "status": "published"
+    }
+    ,
+    {
+      "id": 9,
+      "title": "Comunicação Não-Violenta (CNV) e Resolução de Conflitos",
+      "description": "Foco: Relações interpessoais saudáveis e colaborativas.\n\nObjetivos: Minimizar ruídos, prevenir conflitos e promover diálogo construtivo.\n\nPilares da CNV: Observação sem julgamento, expressão de sentimentos, identificação de necessidades e pedidos claros.",
+      "status": "published"
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Work Talents | Portal de Oportunidades</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+
+    header {
+      background-color: #004aad;
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+    }
+
+    .section {
+      padding: 40px 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .section h2 {
+      color: #004aad;
+      margin-bottom: 10px;
+    }
+
+    .section ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .section ul li {
+      background: #e0ecff;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    button {
+      background-color: #004aad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #00337f;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #004aad;
+      color: white;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+  <h1>Work Talents</h1>
+    <p>Transformando trabalhadores em profissionais capacitados.</p>
+  </header>
+
+  <section class="section" id="cursos">
+    <h2>Cursos Disponíveis</h2>
+    <ul>
+      <li>🧰 Segurança no Trabalho</li>
+      <li>💻 Informática Básica</li>
+      <li>🗣️ Comunicação Eficiente</li>
+      <li>📦 Logística e Armazenamento</li>
+    </ul>
+  </section>
+
+  <section class="section" id="certificacoes">
+    <h2>Certificações</h2>
+    <p>Receba certificados reconhecidos ao concluir os cursos. Valide suas conquistas e melhore seu currículo!</p>
+  </section>
+
+  <section class="section" id="bonificacoes">
+    <h2>Bonificações</h2>
+    <p>Conquiste pontos por cada curso concluído e troque por recompensas como vales, descontos e prêmios exclusivos.</p>
+  </section>
+
+  <section class="section" id="cadastro">
+    <h2>Junte-se a nós</h2>
+    <p>Comece hoje mesmo sua jornada de crescimento profissional.</p>
+    <button onclick="inscrever()">Quero me cadastrar</button>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Work Talents. Todos os direitos reservados.</p>
+  </footer>
+
+  <script>
+    function inscrever() {
+      alert("Obrigado por seu interesse! Em breve, você será redirecionado para o formulário de cadastro.");
+      // Exemplo: redirecionar para um link real
+      // window.location.href = "https://seusite.com/formulario";
+    }
+  </script>
+
+</body>
+</html>

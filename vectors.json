@@ -1,0 +1,58 @@
+[
+  {
+    "id": "1-chunk-1",
+    "courseId": 1,
+    "title": "Segurança no Trabalho",
+    "text": "Segurança no Trabalho Foco: Prevenção de acidentes e promoção de um ambiente de trabalho saudável. Objetivo: Garantir o bem-estar físico e mental dos profissionais, reduzindo riscos e aumentando a produtividade. Ferramentas: Treinamentos, uso de EPIs, pausas ergonômicas e campanhas de conscientização.",
+    "embedding": null
+  },
+  {
+    "id": "2-chunk-1",
+    "courseId": 2,
+    "title": "Informática Básica",
+    "text": "Informática Básica Foco: Uso eficiente da tecnologia para otimizar processos e facilitar a comunicação. Objetivo: Desenvolver soluções digitais que tornem o trabalho mais ágil, seguro e inovador. Ferramentas: Computadores, softwares, redes e sistemas de segurança da informação.",
+    "embedding": null
+  },
+  {
+    "id": "4-chunk-1",
+    "courseId": 4,
+    "title": "Controladoria, Finanças Corporativas e Compliance",
+    "text": "Controladoria, Finanças Corporativas e Compliance Foco: Governança financeira, transparência e integridade. Objetivos: Assegurar a saúde financeira e o cumprimento de normas e políticas internas/externas. Principais práticas: Planejamento orçamentário, análise de desempenho, gestão de riscos e auditoria.",
+    "embedding": null
+  },
+  {
+    "id": "5-chunk-1",
+    "courseId": 5,
+    "title": "Logística, Supply Chain e E-commerce",
+    "text": "Logística, Supply Chain e E-commerce Foco: Eficiência operacional e integração entre cadeia de suprimentos e canais digitais. Objetivos: Reduzir custos, otimizar prazos e aumentar a satisfação do cliente. Tendências: Automação, rastreabilidade, sustentabilidade logística e experiência omnichannel.",
+    "embedding": null
+  },
+  {
+    "id": "6-chunk-1",
+    "courseId": 6,
+    "title": "ESG (Environmental, Social and Governance)",
+    "text": "ESG (Environmental, Social and Governance) Foco: Sustentabilidade e responsabilidade corporativa. Objetivos: Integrar critérios ambientais, sociais e de governança à estratégia empresarial. Indicadores: Emissões de carbono, diversidade, ética nos negócios e impacto social positivo.",
+    "embedding": null
+  },
+  {
+    "id": "7-chunk-1",
+    "courseId": 7,
+    "title": "Liderança Inclusiva e Gestão da Diversidade",
+    "text": "Liderança Inclusiva e Gestão da Diversidade Foco: Cultura organizacional equitativa e valorização das diferenças. Objetivos: Criar ambientes de trabalho inovadores, produtivos e seguros psicologicamente. Competências-chave: Escuta ativa, empatia, gestão de vieses inconscientes e incentivo à participação.",
+    "embedding": null
+  },
+  {
+    "id": "8-chunk-1",
+    "courseId": 8,
+    "title": "Delegação Efetiva e Foco na Autonomia (Empowerment)",
+    "text": "Delegação Efetiva e Foco na Autonomia (Empowerment) Foco: Distribuição inteligente de responsabilidades. Objetivos: Desenvolver equipes autônomas e aumentar a produtividade. Ferramentas: Metas claras, feedback contínuo e cultura de confiança.",
+    "embedding": null
+  },
+  {
+    "id": "9-chunk-1",
+    "courseId": 9,
+    "title": "Comunicação Não-Violenta (CNV) e Resolução de Conflitos",
+    "text": "Comunicação Não-Violenta (CNV) e Resolução de Conflitos Foco: Relações interpessoais saudáveis e colaborativas. Objetivos: Minimizar ruídos, prevenir conflitos e promover diálogo construtivo. Pilares da CNV: Observação sem julgamento, expressão de sentimentos, identificação de necessidades e pedidos claros.",
+    "embedding": null
+  }
+]

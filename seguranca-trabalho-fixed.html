@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Segurança no Trabalho — Módulos | Work Talents</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Module card styles */
+    .module-card{ padding:16px; margin-bottom:14px; border-radius:12px; border:1px solid rgba(139,43,183,0.06); background:linear-gradient(180deg,var(--card),#fbf9ff); box-shadow:0 8px 30px rgba(91,34,130,0.04) }
+    .module-card h2{ display:flex;align-items:center;gap:12px;font-size:1.05rem;margin:0 0 8px;color:var(--primary-dark) }
+    .module-badge{ background:linear-gradient(90deg,var(--accent),var(--primary));color:#fff;padding:6px 10px;border-radius:999px;font-weight:700;font-size:0.82rem }
+    .module-content{ padding-top:6px; color:var(--muted); }
+    .module-content ul{ margin:8px 0 0 18px }
+    .module-access{ margin-top:12px;padding-top:10px;border-top:1px dashed rgba(157,78,209,0.06); display:flex;justify-content:space-between;align-items:center }
+    .module-access .btn-primary{ background:linear-gradient(90deg,var(--accent),var(--primary)); color:#fff; border:none; padding:8px 12px; border-radius:10px; cursor:pointer }
+    .module-toggle{ margin-left:auto;background:transparent;border:none;color:var(--primary);font-weight:700;cursor:pointer }
+    .module-card.collapsed .module-content{ display:none }
+    .module-card .module-title-wrap{ display:flex;align-items:center;width:100%;gap:12px }
+    @media(max-width:720px){ .module-access{ flex-direction:column;align-items:flex-start;gap:8px } }
+
+    /* Back button improved styles: top-left on desktop, circular bottom-left on small screens */
+    #backBtn{
+      position:fixed;
+      left:18px;
+      top:18px;
+      z-index:1600;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:10px;
+      border:none;
+      background:linear-gradient(90deg,var(--accent),var(--primary));
+      color:#fff;
+      box-shadow:0 8px 20px rgba(16,24,40,0.12);
+      font-weight:600;
+      cursor:pointer;
+    }
+    @media(max-width:600px){
+      #backBtn{ left:12px; top:auto; bottom:16px; padding:10px; width:48px; height:48px; border-radius:999px; justify-content:center }
+      #backBtn span{ display:none }
+    }
+  </style>
+</head>
+<body>
+  <main style="max-width:900px;margin:28px auto;padding:18px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <button id="inpageBack" class="btn-ghost" style="padding:8px 12px;" onclick="if(window.history && window.history.length>1){ history.back(); } else { window.location.href='index.html'; }">← Voltar</button>
+      <h1 style="margin:0 0 18px;color:var(--primary)">Segurança no Trabalho — Módulos</h1>
+    </div>
+
+    <!-- Modules list -->
+    <section class="card module-card" id="mod1">
+      <h2>
+        <div class="module-title-wrap"><span class="module-badge">MÓDULO 1</span> Introdução à Segurança do Trabalho</div>
+        <button class="module-toggle" aria-expanded="true">Ocultar ▾</button>
+      </h2>
+      <div class="module-content">
+        <h4>Conteúdos:</h4>
+        <ul>
+          <li>O que é Segurança do Trabalho</li>
+          <li>Importância da prevenção de acidentes</li>
+          <li>Conceitos básicos: risco, perigo, incidente, acidente</li>
+          <li>Responsabilidades do empregador e do empregado</li>
+          <li>Cultura de segurança nas empresas</li>
+        </ul>
+        <p><strong>Objetivo:</strong> fornecer a base conceitual e despertar a consciência sobre prevenção.</p>
+      </div>
+      <div class="module-access">
+        <strong>Acesse a aula</strong>
+        <div>
+          <a class="btn-primary" href="#" onclick="alert('Abrir conteúdo da Aula — Módulo 1');return false">Abrir aula</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card module-card" id="mod2">
+      <h2>
+        <div class="module-title-wrap"><span class="module-badge">MÓDULO 2</span> Normas Regulamentadoras (NRs)</div>
+        <button class="module-toggle" aria-expanded="true">Ocultar ▾</button>
+      </h2>
+      <div class="module-content">
+        <h4>Conteúdos:</h4>
+        <ul>
+          <li>O que são NRs e por que existem</li>
+          <li>NRs mais aplicadas no dia a dia:</li>
+          <li>NR 1 – Disposições Gerais</li>
+          <li>NR 5 – CIPA</li>
+          <li>NR 6 – EPI</li>
+          <li>NR 9 – Gerenciamento de Riscos</li>
+          <li>NR 12 – Máquinas e Equipamentos</li>
+          <li>NR 17 – Ergonomia</li>
+          <li>NR 23 – Proteção Contra Incêndios</li>
+          <li>Como consultar e interpretar uma NR</li>
+        </ul>
+        <p><strong>Objetivo:</strong> capacitar o aluno a reconhecer as normas e aplicá-las corretamente.</p>
+      </div>
+      <div class="module-access">
+        <strong>Acesse a aula</strong>
+        <div>
+          <a class="btn-primary" href="#" onclick="alert('Abrir conteúdo da Aula — Módulo 2');return false">Abrir aula</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card module-card" id="mod3">
+      <h2>
+        <div class="module-title-wrap"><span class="module-badge">MÓDULO 3</span> Identificação e Controle de Riscos</div>
+        <button class="module-toggle" aria-expanded="true">Ocultar ▾</button>
+      </h2>
+      <div class="module-content">
+        <h4>Conteúdos:</h4>
+        <ul>
+          <li>Tipos de riscos ocupacionais</li>
+          <li>Físicos</li>
+          <li>Químicos</li>
+          <li>Biológicos</li>
+          <li>Ergonômicos</li>
+          <li>Acidentes</li>
+          <li>Inspeção e mapeamento de riscos</li>
+          <li>Medidas de controle: EPI, EPC e administrativas</li>
+          <li>Riscos por setor (escritório, indústria, logística, comércio)</li>
+        </ul>
+        <p><strong>Objetivo:</strong> ensinar como identificar riscos e propor medidas preventivas.</p>
+      </div>
+      <div class="module-access">
+        <strong>Acesse a aula</strong>
+        <div>
+          <a class="btn-primary" href="#" onclick="alert('Abrir conteúdo da Aula — Módulo 3');return false">Abrir aula</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card module-card" id="mod4">
+      <h2>
+        <div class="module-title-wrap"><span class="module-badge">MÓDULO 4</span> Equipamentos de Proteção Individual (EPI)</div>
+        <button class="module-toggle" aria-expanded="true">Ocultar ▾</button>
+      </h2>
+      <div class="module-content">
+        <h4>Conteúdos:</h4>
+        <ul>
+          <li>O que é EPI e quando usar</li>
+          <li>Tipos de EPI (capacete, luvas, máscaras, proteção auditiva, óculos, etc.)</li>
+          <li>Higienização, conservação e substituição</li>
+          <li>CA — Certificado de Aprovação</li>
+          <li>Consequências do não uso</li>
+        </ul>
+        <p><strong>Objetivo:</strong> garantir o uso correto e consciente dos EPIs.</p>
+      </div>
+      <div class="module-access">
+        <strong>Acesse a aula</strong>
+        <div>
+          <a class="btn-primary" href="#" onclick="alert('Abrir conteúdo da Aula — Módulo 4');return false">Abrir aula</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card module-card" id="mod5">
+      <h2>
+        <div class="module-title-wrap"><span class="module-badge">MÓDULO 5</span> Ergonomia e Saúde Ocupacional</div>
+        <button class="module-toggle" aria-expanded="true">Ocultar ▾</button>
+      </h2>
+      <div class="module-content">
+        <h4>Conteúdos:</h4>
+        <ul>
+          <li>Princípios da NR-17</li>
+          <li>Postura correta no ambiente de trabalho</li>
+          <li>Ergonomia em atividades de escritório</li>
+          <li>Ergonomia em atividades pesadas</li>
+          <li>Ginástica laboral</li>
+          <li>Prevenção de LER/DORT</li>
+        </ul>
+        <p><strong>Objetivo:</strong> promover práticas saudáveis que evitem lesões e aumentem a produtividade.</p>
+      </div>
+      <div class="module-access">
+        <strong>Acesse a aula</strong>
+        <div>
+          <a class="btn-primary" href="#" onclick="alert('Abrir conteúdo da Aula — Módulo 5');return false">Abrir aula</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card module-card" id="mod6">
+      <h2>
+        <div class="module-title-wrap"><span class="module-badge">MÓDULO 6</span> Prevenção e Combate a Incêndio</div>
+        <button class="module-toggle" aria-expanded="true">Ocultar ▾</button>
+      </h2>
+      <div class="module-content">
+        <h4>Conteúdos:</h4>
+        <ul>
+          <li>Triângulo do fogo</li>
+          <li>Classes de incêndio</li>
+          <li>Tipos de extintores e uso correto</li>
+          <li>Rotas de fuga</li>
+          <li>Sinalização e noções básicas de evacuação</li>
+          <li>Atuação inicial e quando chamar brigadistas</li>
+        </ul>
+        <p><strong>Objetivo:</strong> preparar o aluno para agir de forma segura em situações de emergência.</p>
+      </div>
+      <div class="module-access">
+        <strong>Acesse a aula</strong>
+        <div>
+          <a class="btn-primary" href="#" onclick="alert('Abrir conteúdo da Aula — Módulo 6');return false">Abrir aula</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card module-card" id="mod7">
+      <h2>
+        <div class="module-title-wrap"><span class="module-badge">MÓDULO 7</span> Primeiros Socorros no Ambiente de Trabalho</div>
+        <button class="module-toggle" aria-expanded="true">Ocultar ▾</button>
+      </h2>
+      <div class="module-content">
+        <h4>Conteúdos:</h4>
+        <ul>
+          <li>Condutas iniciais</li>
+          <li>Avaliação da cena</li>
+          <li>Hemorragias, fraturas e queimaduras</li>
+          <li>Desmaios e mal súbito</li>
+          <li>RCP básica (noções teóricas)</li>
+          <li>Quando acionar o SAMU/193</li>
+        </ul>
+        <p><strong>Objetivo:</strong> capacitar o trabalhador a reagir corretamente até a chegada do socorro.</p>
+      </div>
+      <div class="module-access">
+        <strong>Acesse a aula</strong>
+        <div>
+          <a class="btn-primary" href="#" onclick="alert('Abrir conteúdo da Aula — Módulo 7');return false">Abrir aula</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card module-card" id="mod8">
+      <h2>
+        <div class="module-title-wrap"><span class="module-badge">MÓDULO 8</span> Procedimentos de Emergência</div>
+        <button class="module-toggle" aria-expanded="true">Ocultar ▾</button>
+      </h2>
+      <div class="module-content">
+        <h4>Conteúdos:</h4>
+        <ul>
+          <li>Planos de emergência</li>
+          <li>Comunicação interna de incidentes</li>
+          <li>Evacuação e pontos de encontro</li>
+          <li>Procedimentos para acidentes com produtos químicos</li>
+          <li>Condutas em casos de explosão, curto circuito e quedas</li>
+        </ul>
+        <p><strong>Objetivo:</strong> garantir que o colaborador saiba como agir em qualquer tipo de emergência.</p>
+      </div>
+      <div class="module-access">
+        <strong>Acesse a aula</strong>
+        <div>
+          <a class="btn-primary" href="#" onclick="alert('Abrir conteúdo da Aula — Módulo 8');return false">Abrir aula</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card module-card" id="mod9">
+      <h2>
+        <div class="module-title-wrap"><span class="module-badge">MÓDULO 9</span> Segurança Comportamental (BBS)</div>
+        <button class="module-toggle" aria-expanded="true">Ocultar ▾</button>
+      </h2>
+      <div class="module-content">
+        <h4>Conteúdos:</h4>
+        <ul>
+          <li>O que é Behavior-Based Safety</li>
+          <li>O impacto do comportamento humano nos acidentes</li>
+          <li>Como criar hábitos seguros</li>
+          <li>Observação de riscos e comportamento preventivo</li>
+          <li>Comunicação efetiva e trabalho em equipe</li>
+        </ul>
+        <p><strong>Objetivo:</strong> desenvolver a consciência preventiva e reduzir falhas humanas.</p>
+      </div>
+      <div class="module-access">
+        <strong>Acesse a aula</strong>
+        <div>
+          <a class="btn-primary" href="#" onclick="alert('Abrir conteúdo da Aula — Módulo 9');return false">Abrir aula</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card module-card" id="mod10">
+      <h2>
+        <div class="module-title-wrap"><span class="module-badge">MÓDULO 10</span> Avaliação Final e Certificação</div>
+        <button class="module-toggle" aria-expanded="true">Ocultar ▾</button>
+      </h2>
+      <div class="module-content">
+        <h4>Conteúdos:</h4>
+        <ul>
+          <li>Prova objetiva com 25–40 questões</li>
+          <li>Situações práticas (estudos de caso)</li>
+          <li>Emissão automática do certificado</li>
+          <li>Feedback personalizado da IA sobre desempenho</li>
+        </ul>
+        <p><strong>Objetivo:</strong> validar o aprendizado e reforçar pontos de melhoria.</p>
+      </div>
+      <div class="module-access">
+        <strong>Acesse a aula</strong>
+        <div>
+          <a class="btn-primary" href="#" onclick="alert('Abrir conteúdo da Aula — Módulo 10 / Avaliação Final');return false">Abrir aula / Fazer avaliação</a>
+          <button class="btn-primary btn-small" style="margin-left:10px" onclick="generateCertificateForCourse()">Gerar certificado</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="padding:18px;text-align:center;color:var(--muted)">&copy; 2025 Work Talents</footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      // Module toggle handlers
+      document.querySelectorAll('.module-card').forEach(card=>{
+        const btn = card.querySelector('.module-toggle');
+        if(!btn) return;
+        btn.addEventListener('click', ()=>{
+          const isCollapsed = card.classList.toggle('collapsed');
+          btn.setAttribute('aria-expanded', String(!isCollapsed));
+          btn.textContent = isCollapsed ? 'Mostrar ▸' : 'Ocultar ▾';
+        });
+      });
+
+      // Add small back button to page (top-left / circular on mobile)
+      (function(){
+        const back = document.createElement('button'); back.id='backBtn'; back.title='Voltar'; back.setAttribute('aria-label','Voltar');
+        back.innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Voltar</span>';
+        back.addEventListener('click', ()=>{ if(window.history && window.history.length>1){ history.back(); } else { window.location.href='index.html'; } });
+        function adapt(){ if(window.innerWidth<=600){ back.style.left='12px'; back.style.bottom='16px'; back.style.top='auto'; back.style.width='48px'; back.style.height='48px'; back.style.borderRadius='999px'; back.querySelector('span').style.display='none'; } else { back.style.left='18px'; back.style.top='18px'; back.style.bottom='auto'; back.style.width='auto'; back.style.height='auto'; back.style.borderRadius='10px'; back.querySelector('span').style.display='inline'; } }
+        window.addEventListener('resize', adapt); adapt(); document.body.appendChild(back);
+      })();
+
+    });
+
+    // Certificate generation for Segurança no Trabalho (module-specific)
+    function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+    function generateCertificateForCourse(){
+      try{
+        const cur = localStorage.getItem('cm_current');
+        const user = cur ? JSON.parse(cur) : null;
+        if(!user || !user.name){ alert('Faça login para gerar o certificado.'); return; }
+        const userName = user.name;
+        const courseTitle = 'Segurança no Trabalho';
+        if(window.jspdf && window.jspdf.jsPDF){
+          const doc = new window.jspdf.jsPDF();
+          doc.setFontSize(20);
+          doc.text('Certificado de Conclusão',20,30);
+          doc.setFontSize(12);
+          doc.text(`Certificamos que ${userName} concluiu o curso:`,20,50);
+          doc.setFontSize(14);
+          doc.text(courseTitle,20,60);
+          doc.save('certificado-seguranca-no-trabalho.pdf');
+          return;
+        }
+        // Fallback: open a printable window with certificate content
+        const html = `<!doctype html><html><head><meta charset="utf-8"><title>Certificado</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#fff;color:#111;padding:40px} .card{max-width:760px;margin:0 auto;border:1px solid #f0e8fb;padding:36px;border-radius:10px;text-align:center} h1{color:var(--primary);font-size:28px} p{font-size:16px;color:#333}</style></head><body><div class="card"><h1>Certificado de Conclusão</h1><p>Certificamos que <strong>${escapeHtml(userName)}</strong></p><p>concluiu o curso <strong>${escapeHtml(courseTitle)}</strong></p><p>Data: ${new Date().toLocaleDateString()}</p></div></body></html>`;
+        const w = window.open('', '_blank');
+        w.document.write(html);
+        w.document.close();
+        w.focus();
+      }catch(e){ console.error('generateCertificateForCourse error', e); alert('Erro ao gerar o certificado.'); }
+    }
+  </script>
+</body>
+</html>

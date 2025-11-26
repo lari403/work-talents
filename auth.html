@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Entrar / Cadastrar — Work Talents</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="scripts/auth.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="header-brand">
+  <h1>Work Talents</h1>
+        <p>Entrar ou criar conta</p>
+      </div>
+      <div class="right">
+        <nav>
+          <a href="index.html">Voltar</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="section">
+      <div class="card" style="max-width:960px;margin:0 auto;padding:18px;">
+        <div id="authStatus" style="margin-bottom:10px;display:none" class="auth-badge"></div>
+        <div id="loginSuccess" style="display:none;margin-bottom:12px;padding:10px;border-radius:8px;background:#f8fafc;border:1px solid rgba(15,23,42,0.04)"></div>
+        <div class="grid two-col">
+          <div>
+            <form id="loginForm">
+              <h3>Login</h3>
+              <label>Email</label>
+              <input id="loginEmail" type="email" />
+              <div class="field-msg" id="loginEmailMsg"></div>
+              <label>Senha</label>
+              <input id="loginPassword" type="password" />
+              <div class="field-msg" id="loginPasswordMsg"></div>
+              <div style="margin-top:8px">
+                <div class="actions"><button id="loginBtn" type="button">Entrar</button></div>
+              </div>
+            </form>
+          </div>
+          <div>
+            <form id="registerForm">
+              <h3>Cadastro</h3>
+              <label>Nome completo</label>
+              <input id="regName" />
+              <div class="field-msg" id="regNameMsg"></div>
+
+              <label>E-mail</label>
+              <input id="regEmail" type="email" />
+              <div class="field-msg" id="regEmailMsg"></div>
+
+              <label>Gênero</label>
+              <select id="regGender">
+                <option value="">Selecione</option>
+                <option value="F">Feminino</option>
+                <option value="M">Masculino</option>
+                <option value="O">Outro</option>
+                <option value="P">Prefiro não informar</option>
+              </select>
+              <div class="field-msg" id="regGenderMsg"></div>
+
+              <label>Telefone</label>
+              <input id="regPhone" type="tel" />
+              <div class="field-msg" id="regPhoneMsg"></div>
+
+              <label>Cargo</label>
+              <input id="regPosition" />
+              <div class="field-msg" id="regPositionMsg"></div>
+
+              <label>Senha</label>
+              <input id="regPassword" type="password" />
+              <div class="field-msg" id="regPasswordMsg"></div>
+
+              <label>Confirmação de Senha</label>
+              <input id="regPasswordConfirm" type="password" />
+              <div class="field-msg" id="regPasswordConfirmMsg"></div>
+
+              <label style="display:flex;align-items:center;gap:8px;margin-top:8px"><input id="regHasGestorCode" type="checkbox" /> Possuo código de gestor</label>
+              <div id="regGestorWrap" style="display:none;margin-top:8px">
+                <label>Código de gestor (opcional)</label>
+                <input id="regGestorCode" placeholder="Insira o código para contas de gestor" />
+                <div class="field-msg" id="regGestorCodeMsg"></div>
+              </div>
+
+              <label style="display:flex;align-items:center;gap:8px;margin-top:8px"><input id="regTerms" type="checkbox" /> Li e concordo com os <a href="#">Termos de Serviço</a> e a <a href="#">Política de Privacidade</a></label>
+              <div class="field-msg" id="regTermsMsg"></div>
+
+              <div style="margin-top:8px">
+                <div class="actions"><button id="registerBtn" type="button">Cadastrar</button></div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Work Talents. Todos os direitos reservados.</p>
+  </footer>
+
+  <script>
+    // small UI bindings to call the API first, falling back to local helpers
+    const API_BASE = 'http://localhost:3000';
+    function setMsg(id, text, level){ const el=document.getElementById(id); if(!el) return; el.textContent=text; el.classList.toggle('success', level==='success'); }
+    function clearMessages(ids){ ids.forEach(i=>{ const e=document.getElementById(i); if(e){ e.textContent=''; e.classList.remove('success') } }) }
+    function validateEmail(v){ return !!v && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) }
+
+    async function tryApiRegister({ name, email, password, gender, phone, position, gestorCode }){
+      try{
+        // check existing
+        const check = await fetch(`${API_BASE}/users?email=${encodeURIComponent(email)}`);
+        if(!check.ok) throw new Error('api-check-failed');
+        const existing = await check.json();
+        if(Array.isArray(existing) && existing.length>0) throw new Error('Email já cadastrado (API)');
+        // hash password using helper if available
+        const hashed = (window.__CM_auth && typeof window.__CM_auth.hashPassword === 'function') ? await window.__CM_auth.hashPassword(password) : ('noop-'+password);
+        const role = (gestorCode && gestorCode === 'CODIGO-GESTOR-2025') ? 'gestor' : 'user';
+        const res = await fetch(`${API_BASE}/users`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, email, role, passwordHash: hashed, gender, phone, position, gestorCode }) });
+        if(!res.ok) throw new Error('api-create-failed');
+        return await res.json();
+      }catch(e){ throw e }
+    }
+
+    async function tryApiLogin({ email, password }){
+      try{
+        const res = await fetch(`${API_BASE}/users?email=${encodeURIComponent(email)}`);
+        if(!res.ok) throw new Error('api-error');
+        const list = await res.json();
+        const user = Array.isArray(list) && list.length ? list[0] : null;
+        if(!user) throw new Error('Usuário não encontrado (API)');
+        const hashed = (window.__CM_auth && typeof window.__CM_auth.hashPassword === 'function') ? await window.__CM_auth.hashPassword(password) : ('noop-'+password);
+        if(user.passwordHash !== hashed) throw new Error('Senha incorreta (API)');
+        return user;
+      }catch(e){ throw e }
+    }
+
+    document.getElementById('registerBtn').addEventListener('click', async function(){
+      clearMessages(['regNameMsg','regEmailMsg','regGenderMsg','regPhoneMsg','regPositionMsg','regPasswordMsg','regPasswordConfirmMsg','regTermsMsg','regGestorCodeMsg']);
+      const name=document.getElementById('regName').value.trim();
+      const email=document.getElementById('regEmail').value.trim().toLowerCase();
+      const gender=document.getElementById('regGender').value;
+      const phone=document.getElementById('regPhone').value.trim();
+      const position=document.getElementById('regPosition').value.trim();
+      const gestorCode=document.getElementById('regGestorCode') ? document.getElementById('regGestorCode').value.trim() : '';
+      const password=document.getElementById('regPassword').value;
+      const passwordConfirm=document.getElementById('regPasswordConfirm').value;
+      const termsChecked = document.getElementById('regTerms').checked;
+      let hasError=false;
+      if(!name){ setMsg('regNameMsg','Preencha o nome completo.'); hasError=true }
+      if(!validateEmail(email)){ setMsg('regEmailMsg','Email inválido.'); hasError=true }
+      if(!gender){ setMsg('regGenderMsg','Selecione o gênero.'); hasError=true }
+      if(!phone){ setMsg('regPhoneMsg','Informe o telefone.'); hasError=true }
+      if(!position){ setMsg('regPositionMsg','Informe o cargo.'); hasError=true }
+      if(!password || password.length<6){ setMsg('regPasswordMsg','Senha deve ter ao menos 6 caracteres.'); hasError=true }
+      if(password !== passwordConfirm){ setMsg('regPasswordConfirmMsg','As senhas não conferem.'); hasError=true }
+      if(!termsChecked){ setMsg('regTermsMsg','Você deve aceitar os Termos de Serviço e a Política de Privacidade.'); hasError=true }
+      if(hasError) return;
+      // try API first
+      try{
+        const created = await tryApiRegister({ name, email, password, gender, phone, position, gestorCode });
+        if(created && created.id){ setMsg('regEmailMsg','Cadastro realizado via API!','success'); setAuthStatus('API','Cadastro via API');
+          // set current user locally
+          try{ if(window.__CM_auth && typeof window.__CM_auth.setCurrentUser === 'function'){ window.__CM_auth.setCurrentUser({ name: created.name, email: created.email, role: created.role }); } else { localStorage.setItem('cm_current', JSON.stringify({ name: created.name, email: created.email, role: created.role })); } }catch(e){}
+        // store last auth method
+        try{ localStorage.setItem('cm_lastAuthMethod','API'); }catch(e){}
+        showLoggedInUI({ name: created.name, email: created.email, role: created.role }, 'API');
+        return; }
+      }catch(apiErr){
+        // fallback to local
+        try{
+          if(window.__CM_auth && typeof window.__CM_auth.registerLocal === 'function'){
+            const createdLocal = await window.__CM_auth.registerLocal({ name, email, password, gender, phone, position, gestorCode });
+            setMsg('regEmailMsg','Cadastro local realizado!','success'); setAuthStatus('Local','Cadastro local');
+            try{ localStorage.setItem('cm_lastAuthMethod','Local'); }catch(e){}
+            showLoggedInUI({ name: createdLocal.name, email: createdLocal.email, role: createdLocal.role }, 'Local');
+            return;
+          }
+        }catch(localErr){ setMsg('regEmailMsg', localErr.message || 'Erro no cadastro'); return }
+        // if reached here, show API error
+        setMsg('regEmailMsg', apiErr.message || 'Erro no cadastro via API; fallback local falhou.');
+      }
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', async function(){
+      clearMessages(['loginEmailMsg','loginPasswordMsg']);
+      const email=document.getElementById('loginEmail').value.trim().toLowerCase();
+      const password=document.getElementById('loginPassword').value;
+      if(!validateEmail(email)){ setMsg('loginEmailMsg','Email inválido.'); return }
+      if(!password){ setMsg('loginPasswordMsg','Informe a senha.'); return }
+      // try API login
+      try{
+        const user = await tryApiLogin({ email, password });
+  // set current user
+  try{ if(window.__CM_auth && typeof window.__CM_auth.setCurrentUser === 'function'){ window.__CM_auth.setCurrentUser({ name: user.name, email: user.email, role: user.role }); } else { localStorage.setItem('cm_current', JSON.stringify({ name: user.name, email: user.email, role: user.role })); } }catch(e){}
+  setAuthStatus('API','Login via API'); setMsg('loginEmailMsg','Login efetuado via API!','success');
+  try{ localStorage.setItem('cm_lastAuthMethod','API'); }catch(e){}
+  showLoggedInUI({ name: user.name, email: user.email, role: user.role }, 'API');
+    return;
+      }catch(apiErr){
+        // fallback to local
+        try{
+          if(window.__CM_auth && typeof window.__CM_auth.loginLocal === 'function'){
+            await window.__CM_auth.loginLocal({ email, password });
+            setAuthStatus('Local','Login local'); setMsg('loginEmailMsg','Login local efetuado!','success');
+            try{ localStorage.setItem('cm_lastAuthMethod','Local'); }catch(e){}
+            // if loginLocal returns user, use it; otherwise read current
+            const cur = (window.__CM_auth && typeof window.__CM_auth.getCurrentUser === 'function') ? window.__CM_auth.getCurrentUser() : JSON.parse(localStorage.getItem('cm_current')||'null');
+            showLoggedInUI(cur || { name: email, email, role: 'user' }, 'Local');
+            return;
+          }
+        }catch(localErr){ setMsg('loginEmailMsg', localErr.message || 'Erro no login local'); return }
+        setMsg('loginEmailMsg', apiErr.message || 'Erro ao conectar com API e login local falhou');
+      }
+    });
+
+    // helper to display auth source badge
+    function setAuthStatus(kind, text){
+      const el = document.getElementById('authStatus'); if(!el) return; el.style.display='block'; el.textContent = text || kind; el.className = 'auth-badge ' + (kind === 'API' ? 'api' : 'local');
+    }
+
+    // show inline success panel when user logs in or registers (no redirect)
+    function showLoggedInUI(user, method){
+      try{ document.getElementById('authStatus').style.display='block'; }catch(e){}
+      setAuthStatus(method, method === 'API' ? 'Conectado via API' : 'Conectado localmente');
+      const panel = document.getElementById('loginSuccess');
+      if(!panel) return;
+      panel.style.display='block';
+      panel.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><div>Você está conectado como <strong>${user.name||user.email}</strong> (${user.role||'user'})</div><div style="display:flex;gap:8px"><a href="index.html" class="btn-ghost" style="text-decoration:none">Ir para o site</a><button id="showEnrollmentsBtn" class="btn-ghost">Minhas matrículas</button><button id="authLogout" class="btn-ghost">Sair</button></div></div><div id="enrollmentsPanel" style="margin-top:10px;display:none"></div>`;
+      const out = document.getElementById('authLogout'); if(out){ out.addEventListener('click', function(){ try{ if(window.__CM_auth && typeof window.__CM_auth.logout === 'function'){ window.__CM_auth.logout(); } else { localStorage.removeItem('cm_current'); } panel.style.display='none'; setAuthStatus('Local',''); }catch(e){} }); }
+      const showBtn = document.getElementById('showEnrollmentsBtn'); if(showBtn){ showBtn.addEventListener('click', async function(){ const panelEl = document.getElementById('enrollmentsPanel'); if(!panelEl) return; if(panelEl.style.display === 'block'){ panelEl.style.display='none'; return; } panelEl.style.display='block'; panelEl.innerHTML = '<div>Carregando matrículas...</div>'; const items = await loadEnrollments(user); renderEnrollments(panelEl, items); }); }
+    }
+
+    // load enrollments for current user (try API then fallback to localStorage)
+    async function loadEnrollments(user){
+      try{
+        const res = await fetch(API_BASE + '/enrollments?email=' + encodeURIComponent(user.email));
+        if(res.ok){ const data = await res.json(); return data; }
+      }catch(e){}
+      try{ const all = JSON.parse(localStorage.getItem('cm_enrollments')||'[]'); return all.filter(en=>en.user && en.user.email === user.email); }catch(e){ return []; }
+    }
+
+    function renderEnrollments(container, items){
+      if(!container) return;
+      if(!Array.isArray(items) || items.length===0){ container.innerHTML = '<div>Nenhuma matrícula encontrada.</div>'; return; }
+      const ul = document.createElement('ul');
+      ul.style.listStyle='none'; ul.style.padding='0'; ul.style.display='grid'; ul.style.gap='8px';
+      items.forEach(it=>{
+        const li = document.createElement('li');
+        li.className='card'; li.style.display='flex'; li.style.justifyContent='space-between'; li.style.alignItems='center';
+        const left = document.createElement('div');
+        left.innerHTML = `<div style="font-weight:700">${escapeHtml(it.title || it.courseTitle || '')}</div><div style="font-size:0.9rem;color:var(--muted)">Matriculado em: ${new Date(it.at).toLocaleString()}</div>`;
+        const right = document.createElement('div');
+        const btn = document.createElement('button');
+        btn.className='btn-ghost'; btn.textContent='Cancelar matrícula';
+        btn.onclick = async ()=>{
+          try{
+            if(it.id){
+              try{ await fetch(API_BASE + '/enrollments/' + it.id, { method:'DELETE' }); }catch(e){}
+            }
+            // remove locally
+            let list = JSON.parse(localStorage.getItem('cm_enrollments')||'[]');
+            list = list.filter(x => !(String(x.id) === String(it.id) || (x.courseId && String(x.courseId) === String(it.courseId))));
+            localStorage.setItem('cm_enrollments', JSON.stringify(list));
+            li.remove();
+          }catch(e){ console.error('Erro ao cancelar matrícula', e); }
+        };
+        right.appendChild(btn);
+        li.appendChild(left); li.appendChild(right); ul.appendChild(li);
+      });
+      container.innerHTML=''; container.appendChild(ul);
+    }
+
+    function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+    // toggle gestor code input
+    const regHas = document.getElementById('regHasGestorCode');
+    if(regHas){
+      regHas.addEventListener('change', function(){
+        const wrap = document.getElementById('regGestorWrap');
+        if(wrap){ wrap.style.display = this.checked ? 'block' : 'none'; if(!this.checked){ const inp=document.getElementById('regGestorCode'); if(inp) inp.value=''; } }
+      });
+    }
+  </script>
+</body>
+</html>
